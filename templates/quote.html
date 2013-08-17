@@ -1,0 +1,25 @@
+{% import "_show_tweet.html" as show_tweet %}
+{% import "_update.html" as update %}
+<!DOCTYPE html>
+<html>
+<head>  
+  <title>Twitter</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/normalize.css') }}" />
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/master.css') }}" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+<body>
+	{%- include "_nav.html" -%}
+	<div id="wrapper">
+		<section id="timeline">
+			{{ update.helper(tweet, 'RT @%s: %s' % (tweet.user.screen_name, tweet.text)) }}
+			{{ show_tweet.helper(tweet) }}
+		</section>
+	</div>
+</body>
+</html>

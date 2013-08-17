@@ -1,0 +1,70 @@
+#wrapper {
+	margin-top: 2.5rem;
+}
+
+.tweet {
+	border-bottom: 1px solid #ddd;
+	clear: both;
+	min-height: 4.25rem;
+	margin: .5rem 0;
+	padding: .25rem .5rem;
+}
+
+.icon {
+	float: left;
+	margin-right: .5rem;
+	padding: 0.25rem;
+	border: 1px solid #ececec;
+}
+
+.meta, .text {
+	margin: .25rem;
+}
+
+.tweet, nav {
+	font-size: .75rem;
+}
+
+.name, #title {
+	font-weight: bold;
+}
+
+.actions, .screen_name, .timestamp {
+	font-size: .625rem;
+}
+
+.screen_name, .timestamp {
+	color: #999;
+}
+
+nav {
+	position: fixed;
+	top: 0;
+	width: 100%;
+}
+
+nav ul {
+	padding: 0;
+	background: #3ac;
+	color: #fff;
+	margin: 0;
+}
+
+nav ul li {
+	display: inline-block;
+	height: 2rem;
+	line-height: 2rem;
+	padding: 0 1rem;
+}
+
+.actions a {
+	color: #000;
+}
+
+nav ul li a {
+	color: #fff;
+}
+
+#title {
+	background: #3e7ab5;
+}
