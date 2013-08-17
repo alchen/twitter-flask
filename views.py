@@ -82,6 +82,17 @@ def update():
     return redirect(url_for('show_index'))
 
 
+@app.route('/-update/<int:id>')
+def unupdate(id):
+    resp = twitter.post('statuses/destroy/%d.json' % id)
+    if resp.status == 403:
+        flash('Delete failed.')
+    else:
+        flash('Successfully deleted your new tweet')
+
+    return redirect(url_for('show_index'))
+
+
 @app.route('/+retweet/<int:id>')
 def retweet(id):
     resp = twitter.post('statuses/retweet/%d.json' % id)
@@ -116,6 +127,17 @@ def favorite(id):
         flash('Favorite failed.')
     else:
         flash('Successfully favorited.')
+
+    return redirect(request.referrer or url_for('show_index'))
+
+
+@app.route('/-favorite/<int:id>')
+def unfavorite(id):
+    resp = twitter.post('favorites/destroy.json', data={'id': id})
+    if resp.status == 403:
+        flash('Unfavorite failed.')
+    else:
+        flash('Successfully unfavorited.')
 
     return redirect(request.referrer or url_for('show_index'))
 
@@ -204,6 +226,7 @@ def oauth_authorized(resp):
     session['twitter_token'] = (resp['oauth_token'],
                                 resp['oauth_token_secret'])
     session['twitter_user'] = resp['screen_name']
+    session['twitter_id'] = resp['user_id']
 
     icon = twitter.get('users/show.json?screen_name=%s' % resp['screen_name'])
     if icon.status == 200:
