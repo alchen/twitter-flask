@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
     <section id="timeline">
+    {{ update.helper(tweet) }}
     {%- for tweet in tweets -%}
       {{ show_tweet.helper(tweet) }}
     {%- endfor -%}
