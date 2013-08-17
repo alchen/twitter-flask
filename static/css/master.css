@@ -72,3 +72,13 @@ nav ul li a {
 #title {
 	background: #3e7ab5;
 }
+
+#more {
+	margin: .5rem;
+	padding: .5rem;
+	background: #ccc;
+}
+
+#more a {
+	color: #000;
+}

@@ -1,7 +1,7 @@
 {% macro helper(text) %}
 			<div class="tweet">
 				<form method="post" action="{{ url_for('update') }}" name="status-form">
-					<div class="icon"><a href="{{ url_for('show_user', name=session['twitter_name']) }}"><img src="{{ session['twitter_icon'] }}" /></a></div>
+					<div class="icon"><a href="{{ url_for('show_user', name=session['twitter_user']) }}"><img src="{{ session['twitter_icon'] }}" /></a></div>
 					<div class="meta"><span class="name">{{ session['twitter_name'] }}</span> <span class="screen_name">@{{ session['twitter_user']  }}</span> - <span class="timestamp">Future</span><br /><span class="actions"><input type="submit" value="Update" /></span></div>
 					<div class="text"><textarea name="status" rows="5" cols="38">{{ text }}</textarea></div>
 					<input type="hidden" name="in_reply_to" value="{{ id }}" />

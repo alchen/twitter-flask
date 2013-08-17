@@ -8,7 +8,12 @@ def show_index():
     if not token:
         return render_template('prompt.html')
 
-    resp = twitter.get('statuses/home_timeline.json')
+    if 'max_id' in request.args:
+        resp = twitter.get('statuses/home_timeline.json',
+                           data={'max_id': request.args['max_id']})
+    else:
+        resp = twitter.get('statuses/home_timeline.json')
+
     if resp.status == 200:
         tweets = resp.data
     else:
@@ -16,7 +21,17 @@ def show_index():
         flash('Unable to load tweets from Twitter. Maybe out of '
               'API calls or Twitter is overloaded.')
 
-    return render_template('timeline.html', tweets=tweets)
+    since_id = max_id = None
+    for tweet in tweets:
+        if since_id is None or since_id < tweet['id']:
+            since_id = tweet['id']
+        if max_id is None or max_id > tweet['id']:
+            max_id = tweet['id']
+    max_id -= 1
+
+    return render_template('timeline.html', tweets=tweets, max_id=max_id,
+                           since_id=since_id, endpoint="show_index",
+                           endpoint_args={})
 
 
 @app.route('/~mentions')
@@ -25,7 +40,12 @@ def show_mentions():
     if not token:
         return render_template('prompt.html')
 
-    resp = twitter.get('statuses/mentions_timeline.json')
+    if 'max_id' in request.args:
+        resp = twitter.get('statuses/mentions_timeline.json',
+                           data={'max_id': request.args['max_id']})
+    else:
+        resp = twitter.get('statuses/mentions_timeline.json')
+
     if resp.status == 200:
         tweets = resp.data
     else:
@@ -33,7 +53,17 @@ def show_mentions():
         flash('Unable to load tweets from Twitter. Maybe out of '
               'API calls or Twitter is overloaded.')
 
-    return render_template('timeline.html', tweets=tweets)
+    since_id = max_id = None
+    for tweet in tweets:
+        if since_id is None or since_id < tweet['id']:
+            since_id = tweet['id']
+        if max_id is None or max_id > tweet['id']:
+            max_id = tweet['id']
+    max_id -= 1
+
+    return render_template('timeline.html', tweets=tweets, max_id=max_id,
+                           since_id=since_id, endpoint="show_mentions",
+                           endpoint_args={})
 
 
 @app.route('/~messages')
@@ -56,8 +86,15 @@ def show_messages():
 @app.route('/@<name>')
 @app.route('/<name>')
 def show_user(name):
-    resp = twitter.get('statuses/user_timeline.json',
-                       data={'screen_name': name})
+
+    if 'max_id' in request.args:
+        resp = twitter.get('statuses/user_timeline.json',
+                           data={'max_id': request.args['max_id'],
+                                 'screen_name': name})
+    else:
+        resp = twitter.get('statuses/user_timeline.json',
+                           data={'screen_name': name})
+
     if resp.status == 200:
         tweets = resp.data
     else:
@@ -65,7 +102,17 @@ def show_user(name):
         flash('Unable to load tweets from Twitter. Maybe out of '
               'API calls or Twitter is overloaded.')
 
-    return render_template('timeline.html', tweets=tweets)
+    since_id = max_id = None
+    for tweet in tweets:
+        if since_id is None or since_id < tweet['id']:
+            since_id = tweet['id']
+        if max_id is None or max_id > tweet['id']:
+            max_id = tweet['id']
+    max_id -= 1
+
+    return render_template('timeline.html', tweets=tweets, max_id=max_id,
+                           since_id=since_id, endpoint="show_user",
+                           endpoint_args={'name': name})
 
 
 @app.route('/+update', methods=['GET', 'POST'])
