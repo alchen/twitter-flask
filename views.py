@@ -19,7 +19,7 @@ def show_index():
     return render_template('timeline.html', tweets=tweets)
 
 
-@app.route('/+mentions')
+@app.route('/~mentions')
 def show_mentions():
     token = get_twitter_token()
     if not token:
@@ -36,7 +36,7 @@ def show_mentions():
     return render_template('timeline.html', tweets=tweets)
 
 
-@app.route('/+messages')
+@app.route('/~messages')
 def show_messages():
     token = get_twitter_token()
     if not token:
@@ -53,8 +53,8 @@ def show_messages():
     return render_template('messages.html', messages=messages)
 
 
-@app.route('/<name>')
 @app.route('/@<name>')
+@app.route('/<name>')
 def show_user(name):
     resp = twitter.get('statuses/user_timeline.json',
                        data={'screen_name': name})
@@ -90,7 +90,23 @@ def retweet(id):
     else:
         flash('Successfully retweeted.')
 
-    return redirect(url_for('show_index'))
+    return redirect(request.referrer or url_for('show_index'))
+
+
+@app.route('/-retweet/<int:id>')
+def unretweet(id):
+    resp = twitter.get('statuses/show/%d.json?include_my_retweet=1' % id)
+    if resp.status == 403:
+        flash('Unretweet failed.')
+    else:
+        retweet_id = resp.data['current_user_retweet']['id']
+        resp = twitter.post('statuses/destroy/%d.json' % retweet_id)
+        if resp.status == 200:
+            flash('Successfully unretweeted.')
+        else:
+            flash('Unretweet failed.')
+
+    return redirect(request.referrer or url_for('show_index'))
 
 
 @app.route('/+favorite/<int:id>')
@@ -101,7 +117,31 @@ def favorite(id):
     else:
         flash('Successfully favorited.')
 
-    return redirect(url_for('show_index'))
+    return redirect(request.referrer or url_for('show_index'))
+
+
+@app.route('/~thread/<int:id>')
+def thread(id):
+    resp = twitter.get('statuses/show.json', data={'id': id})
+    if resp.status == 200:
+        tweet = resp.data
+    else:
+        tweet = None
+        flash('Unable to load tweets from Twitter. Maybe out of '
+              'API calls or Twitter is overloaded.')
+
+    if tweet and tweet['in_reply_to_status_id']:
+        resp = twitter.get('statuses/show.json',
+                           data={'id': tweet['in_reply_to_status_id']})
+        if resp.status == 200:
+            replied_tweet = resp.data
+        else:
+            replied_tweet = None
+            flash('Unable to load tweets from Twitter. Maybe out of '
+                  'API calls or Twitter is overloaded.')
+
+    return render_template('reply.html', id=id, tweet=tweet,
+                           replied_tweet=replied_tweet)
 
 
 @app.route('/+reply/<int:id>')

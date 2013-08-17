@@ -1,7 +1,7 @@
-{% macro helper(message) %}
+{% macro helper(message) -%}
 			<div class="tweet">
 				<div class="icon"><a href="{{ url_for('show_user', name=message.sender.screen_name) }}"><img src="{{ message.sender.profile_image_url }}" /></a></div>
-				<div class="meta"><span class="name">{{ message.sender.name }}</span> <span class="screen_name">@{{ message.sender.screen_name }}</span> - <span class="timestamp">{{ message.created_at | pretty_date }}</span><br /><span class="actions"><a href="{{ url_for('reply', id=message.id) }}">Reply</a></span></div>
+				<div class="meta"><span class="name">{{ message.sender.name }}</span> <span class="screen_name">@{{ message.sender.screen_name }}</span> - <span class="timestamp">{{ message.created_at | pretty_date }}</span><!--<br /><span class="actions"><a href="{{ url_for('reply', id=message.id) }}">Reply</a></span>--></div>
 				<div class="text">{{ message.text | safe }}</div>
 			</div>
-{% endmacro %}
+{%- endmacro %}

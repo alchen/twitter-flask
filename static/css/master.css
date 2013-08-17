@@ -57,6 +57,10 @@ nav ul li {
 	padding: 0 1rem;
 }
 
+.timestamp a {
+	color: #999;
+}
+
 .actions a {
 	color: #000;
 }

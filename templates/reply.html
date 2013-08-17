@@ -18,6 +18,9 @@
 	<div id="wrapper">
 		<section id="timeline">
 			{{ update.helper(tweet, '@%s ' % tweet.user.screen_name) }}
+      {%- if replied_tweet %}
+      {{ show_tweet.helper(replied_tweet) }}
+      {% endif -%}
 			{{ show_tweet.helper(tweet) }}
 		</section>
 	</div>
