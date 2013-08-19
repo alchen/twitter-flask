@@ -17,7 +17,16 @@
 	border: 1px solid #ececec;
 }
 
-.meta, .text {
+.text {
+	margin: .25rem .25rem .25rem 4rem;
+	white-space: pre-wrap;
+}
+
+.text a {
+	color: #3ac;
+}
+
+.meta {
 	margin: .25rem;
 }
 

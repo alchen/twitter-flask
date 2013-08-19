@@ -1,4 +1,5 @@
 import os
+import re
 import email.utils
 import pytz
 from flask import Flask
@@ -80,8 +81,17 @@ def pretty_date(time=False, now=None):
         return str(day_diff / 30) + " months ago"
     return str(day_diff / 365) + " years ago"
 
+
+def linkify(tweet):
+    name_replacement = re.compile(r'@(\w+)')
+    url_replacement = re.compile(r'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?]))')
+    tweet = name_replacement.sub('<a href="\g<1>">@\g<1></a>', tweet)
+    tweet = url_replacement.sub('<a href="\g<1>">\g<1></a>', tweet)
+    return tweet
+
 app.jinja_env.filters['datetime'] = datetimeformat
 app.jinja_env.filters['pretty_date'] = pretty_date
+app.jinja_env.filters['linkify'] = linkify
 
 from views import *
 

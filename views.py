@@ -1,5 +1,19 @@
+import os
 from twitter import app, twitter
 from flask import render_template, session, redirect, flash, url_for, request
+from flask import send_from_directory
+
+
+@app.route('/favicon.ico')
+def favicon_ico():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'img/favicon.ico', mimetype='image/x-icon')
+
+
+@app.route('/favicon.png')
+def favicon_png():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'img/favicon.png', mimetype='image/png')
 
 
 @app.route('/')
@@ -86,7 +100,6 @@ def show_messages():
 @app.route('/@<name>')
 @app.route('/<name>')
 def show_user(name):
-
     if 'max_id' in request.args:
         resp = twitter.get('statuses/user_timeline.json',
                            data={'max_id': request.args['max_id'],
