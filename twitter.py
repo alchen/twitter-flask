@@ -88,9 +88,14 @@ def linkify(tweet):
     tweet = url_replacement.sub('<a href="\g<1>">\g<1></a>', tweet)
     return tweet
 
+
+def is_mention(screen_name, tweet):
+    return re.search('@%s' % screen_name, tweet['text']) is not None
+
 app.jinja_env.filters['datetime'] = datetimeformat
 app.jinja_env.filters['pretty_date'] = pretty_date
 app.jinja_env.filters['linkify'] = linkify
+app.jinja_env.globals.update(is_mention=is_mention)
 
 from views import *
 

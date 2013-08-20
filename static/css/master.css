@@ -6,9 +6,11 @@
 .tweet {
 	border-bottom: 1px solid #ddd;
 	clear: both;
-	min-height: 4.25rem;
-	margin: .5rem 0;
-	padding: .25rem .5rem;
+	padding: .5rem;
+}
+
+.mention {
+	background: #f0f0f0;
 }
 
 .icon {
