@@ -1,5 +1,6 @@
-#wrapper {
-	margin-top: 2.5rem;
+#top {
+	padding-top: 2rem;
+	display: block;
 }
 
 .tweet {
@@ -66,6 +67,20 @@ nav ul li {
 	padding: 0 1rem;
 }
 
+.flashes {
+	margin: 0;
+	padding: 0;
+}
+
+.flashes li {
+	background: #333;
+	height: 2rem;
+	line-height: 2rem;
+	color: #fff;
+	padding: 0 .875rem;
+	font-size: .875rem;
+}
+
 .timestamp a {
 	color: #999;
 }
@@ -80,6 +95,10 @@ nav ul li a {
 
 #title {
 	background: #3e7ab5;
+}
+
+#title a {
+	text-decoration: none;
 }
 
 #more {

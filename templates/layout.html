@@ -15,9 +15,20 @@
   <![endif]-->
 </head>
 <body>
+  
   {%- include "_nav.html" -%}
   <div id="wrapper">
-    {%- block body %}{% endblock -%}
+  <a name="top" id="top"></a>
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  {% endwith %}
+  {%- block body %}{% endblock -%}
   </div>
 </body>
 </html>

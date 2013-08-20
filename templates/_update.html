@@ -1,4 +1,4 @@
-{% macro helper(text) %}
+{%- macro helper(text) -%}
 			<div class="tweet">
 				<form method="post" action="{{ url_for('update') }}" name="status-form">
 					<div class="icon"><a href="{{ url_for('show_user', name=session['twitter_user']) }}"><img src="{{ session['twitter_icon'] }}" /></a></div>
@@ -7,4 +7,4 @@
 					<input type="hidden" name="in_reply_to" value="{{ id }}" />
 				</form>
 			</div>
-{% endmacro %}
+{%- endmacro -%}
