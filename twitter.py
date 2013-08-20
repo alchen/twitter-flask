@@ -3,7 +3,6 @@ import re
 import email.utils
 import pytz
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.oauth import OAuth
 
