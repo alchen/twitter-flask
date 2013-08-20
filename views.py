@@ -1,4 +1,5 @@
 import os
+import re
 from twitter import app, twitter
 from flask import render_template, session, redirect, flash, url_for, request
 from flask import send_from_directory
@@ -251,7 +252,14 @@ def reply(id):
         flash('Unable to load tweets from Twitter. Maybe out of '
               'API calls or Twitter is overloaded.')
 
-    return render_template('reply.html', id=id, tweet=tweet)
+    names = re.findall(r'(@\w+)', tweet['text'])
+    author = '@'+tweet['user']['screen_name']
+    if author in names:
+        names.remove(author)
+    tweet_prefix = ' '.join([author] + names) + ' '
+
+    return render_template('reply.html', id=id, tweet=tweet,
+                           tweet_prefix=tweet_prefix)
 
 
 @app.route('/+quote/<int:id>')
