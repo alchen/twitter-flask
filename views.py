@@ -19,8 +19,7 @@ def favicon_png():
 
 @app.route('/')
 def show_index():
-    token = get_twitter_token()
-    if not token:
+    if not get_twitter_token():
         return render_template('prompt.html')
 
     if 'max_id' in request.args:
@@ -28,6 +27,11 @@ def show_index():
                            data={'max_id': request.args['max_id']})
     else:
         resp = twitter.get('statuses/home_timeline.json')
+
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
 
     since_id = max_id = None
     if resp.status == 200:
@@ -62,6 +66,11 @@ def show_mentions():
     else:
         resp = twitter.get('statuses/mentions_timeline.json')
 
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
+
     since_id = max_id = None
     if resp.status == 200:
         tweets = resp.data
@@ -90,6 +99,11 @@ def show_messages():
         return render_template('prompt.html')
 
     resp = twitter.get('direct_messages.json')
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
+
     if resp.status == 200:
         messages = resp.data
     else:
@@ -110,6 +124,11 @@ def show_user(name):
     else:
         resp = twitter.get('statuses/user_timeline.json',
                            data={'screen_name': name})
+
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
 
     since_id = max_id = None
     if resp.status == 200:
@@ -139,6 +158,11 @@ def update():
         'in_reply_to_status_id': request.form['in_reply_to']
     })
 
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
+
     if resp.status != 200:
         for error in resp.data['errors']:
             flash(error['message'])
@@ -165,6 +189,11 @@ def unupdate(id):
 def retweet(id):
     resp = twitter.post('statuses/retweet/%d.json' % id)
 
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
+
     if resp.status != 200:
         for error in resp.data['errors']:
             flash(error['message'])
@@ -177,6 +206,11 @@ def retweet(id):
 @app.route('/-retweet/<int:id>')
 def unretweet(id):
     resp = twitter.get('statuses/show/%d.json?include_my_retweet=1' % id)
+
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
 
     if resp.status != 200:
         for error in resp.data['errors']:
@@ -196,6 +230,11 @@ def unretweet(id):
 def favorite(id):
     resp = twitter.post('favorites/create.json', data={'id': id})
 
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
+
     if resp.status != 200:
         for error in resp.data['errors']:
             flash(error['message'])
@@ -209,6 +248,11 @@ def favorite(id):
 def unfavorite(id):
     resp = twitter.post('favorites/destroy.json', data={'id': id})
 
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
+
     if resp.status != 200:
         for error in resp.data['errors']:
             flash(error['message'])
@@ -221,6 +265,11 @@ def unfavorite(id):
 @app.route('/~thread/<int:id>')
 def thread(id):
     resp = twitter.get('statuses/show.json', data={'id': id})
+
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
 
     if resp.status != 200 or not resp.data['in_reply_to_status_id']:
         tweet = None
@@ -244,6 +293,11 @@ def thread(id):
 @app.route('/+reply/<int:id>')
 def reply(id):
     resp = twitter.get('statuses/show.json', data={'id': id})
+
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
 
     if resp.status == 200:
         tweet = resp.data
@@ -269,6 +323,11 @@ def reply(id):
 def quote(id):
     resp = twitter.get('statuses/show.json', data={'id': id})
 
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
+
     if resp.status == 200:
         tweet = resp.data
     else:
@@ -293,6 +352,7 @@ def login():
 def logout():
     next_url = request.args.get('next') or url_for('show_index')
     session.pop('twitter_token')
+    flash('You\'re signed out.')
 
     return redirect(next_url)
 
