@@ -1,4 +1,4 @@
-{%- macro helper(text) -%}
+{%- macro helper(text, id) -%}
 			<div class="tweet">
 				<form method="post" action="{{ url_for('update') }}" name="status-form">
 					<div class="icon"><a href="{{ url_for('show_user', name=session['twitter_user']) }}"><img src="{{ session['twitter_icon'] }}" /></a></div>

@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
     <section id="timeline">
-      {{ update.helper('RT @%s: %s' % (tweet.user.screen_name, tweet.text)) }}
+      {{ update.helper('RT @%s: %s' % (tweet.user.screen_name, tweet.text), id) }}
       {{ show_tweet.helper(tweet) }}
     </section>
 {% endblock %}

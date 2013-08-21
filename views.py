@@ -29,10 +29,10 @@ def show_index():
     else:
         resp = twitter.get('statuses/home_timeline.json')
 
+    since_id = max_id = None
     if resp.status == 200:
         tweets = resp.data
 
-        since_id = max_id = None
         for tweet in tweets:
             if since_id is None or since_id < tweet['id']:
                 since_id = tweet['id']
@@ -62,10 +62,10 @@ def show_mentions():
     else:
         resp = twitter.get('statuses/mentions_timeline.json')
 
+    since_id = max_id = None
     if resp.status == 200:
         tweets = resp.data
 
-        since_id = max_id = None
         for tweet in tweets:
             if since_id is None or since_id < tweet['id']:
                 since_id = tweet['id']
@@ -111,10 +111,10 @@ def show_user(name):
         resp = twitter.get('statuses/user_timeline.json',
                            data={'screen_name': name})
 
+    since_id = max_id = None
     if resp.status == 200:
         tweets = resp.data
 
-        since_id = max_id = None
         for tweet in tweets:
             if since_id is None or since_id < tweet['id']:
                 since_id = tweet['id']
@@ -254,8 +254,11 @@ def reply(id):
 
     names = re.findall(r'(@\w+)', tweet['text'])
     author = '@'+tweet['user']['screen_name']
+    user = '@'+session['twitter_user']
     if author in names:
         names.remove(author)
+    if user in names:
+        names.remove(user)
     tweet_prefix = ' '.join([author] + names) + ' '
 
     return render_template('reply.html', id=id, tweet=tweet,

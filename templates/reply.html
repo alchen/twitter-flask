@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
     <section id="timeline">
-      {{ update.helper(tweet_prefix) }}
+      {{ update.helper(tweet_prefix, id) }}
       {%- if replied_tweet %}
       {{ show_tweet.helper(replied_tweet) }}
       {% endif -%}
