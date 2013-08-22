@@ -6,7 +6,8 @@
 .rule {
 	padding: .5rem 1rem;
 	border-bottom: 1px solid #eee;
-	line-height: 1rem;
+	color: #999;
+	line-height: 1.5rem;
 }
 
 .tweet {

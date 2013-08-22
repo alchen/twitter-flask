@@ -130,6 +130,9 @@ def show_messages():
 @app.route('/@<name>')
 @app.route('/<name>')
 def show_user(name):
+    if not get_twitter_token():
+        return render_template('prompt.html')
+
     if 'max_id' in request.args:
         resp = twitter.get('statuses/user_timeline.json',
                            data={'max_id': request.args['max_id'],
@@ -138,16 +141,27 @@ def show_user(name):
         resp = twitter.get('statuses/user_timeline.json',
                            data={'screen_name': name})
 
-    if resp.status == 401:
-        session.pop('twitter_token')
-        flash('Unauthorized account access.')
-        return redirect(url_for('show_index'))
+    if request.is_xhr:
+        if resp.status == 401:
+            return jsonify(success=False, data='Unauthorized account access.')
 
-    since_id, max_id, tweets = timeline_pagination(resp)
+        since_id, max_id, tweets = timeline_pagination(resp)
 
-    return render_template('timeline.html', tweets=tweets, max_id=max_id,
-                           since_id=since_id, endpoint="show_user",
-                           endpoint_args={'name': name})
+        return jsonify(success=True, data=
+                       render_template('_timeline.html',
+                       tweets=tweets, max_id=max_id, since_id=since_id,
+                       endpoint='show_user', endpoint_args={'name': name}))
+    else:
+        if resp.status == 401:
+            session.pop('twitter_token')
+            flash('Unauthorized account access.')
+            return redirect(url_for('show_index'))
+
+        since_id, max_id, tweets = timeline_pagination(resp)
+
+        return render_template('timeline.html', tweets=tweets, max_id=max_id,
+                               since_id=since_id, endpoint="show_user",
+                               endpoint_args={'name': name})
 
 
 @app.route('/+update', methods=['GET', 'POST'])
