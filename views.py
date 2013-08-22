@@ -2,7 +2,7 @@ import os
 import re
 from twitter import app, twitter
 from flask import render_template, session, redirect, flash, url_for, request
-from flask import send_from_directory
+from flask import send_from_directory, jsonify
 
 
 @app.route('/favicon.ico')
@@ -17,6 +17,26 @@ def favicon_png():
                                'img/favicon.png', mimetype='image/png')
 
 
+def timeline_pagination(resp):
+    since_id = max_id = None
+    if resp.status == 200:
+        tweets = resp.data
+
+        for tweet in tweets:
+            if since_id is None or since_id < tweet['id']:
+                since_id = tweet['id']
+            if max_id is None or max_id > tweet['id']:
+                max_id = tweet['id']
+        max_id -= 1
+    else:
+        tweets = []
+
+        flash('Unable to load tweets from Twitter.')
+        for error in resp.data['errors']:
+            flash(error['message'])
+
+    return (since_id, max_id, tweets)
+
 @app.route('/')
 def show_index():
     if not get_twitter_token():
@@ -28,36 +48,32 @@ def show_index():
     else:
         resp = twitter.get('statuses/home_timeline.json')
 
-    if resp.status == 401:
-        session.pop('twitter_token')
-        flash('Unauthorized account access.')
-        return redirect(url_for('show_index'))
+    if request.is_xhr:
+        if resp.status == 401:
+            return jsonify(success=False, data='Unauthorized account access.')
 
-    since_id = max_id = None
-    if resp.status == 200:
-        tweets = resp.data
+        since_id, max_id, tweets = timeline_pagination(resp)
 
-        for tweet in tweets:
-            if since_id is None or since_id < tweet['id']:
-                since_id = tweet['id']
-            if max_id is None or max_id > tweet['id']:
-                max_id = tweet['id']
-        max_id -= 1
+        return jsonify(success=True, data=
+                       render_template('_timeline.html',
+                       tweets=tweets, max_id=max_id, since_id=since_id,
+                       endpoint='show_index', endpoint_args={}))
     else:
-        tweets = []
+        if resp.status == 401:
+            session.pop('twitter_token')
+            flash('Unauthorized account access.')
+            return redirect(url_for('show_index'))
 
-        flash('Unable to load tweets from Twitter. Maybe out of '
-              'API calls or Twitter is overloaded.')
+        since_id, max_id, tweets = timeline_pagination(resp)
 
-    return render_template('timeline.html', tweets=tweets, max_id=max_id,
-                           since_id=since_id, endpoint="show_index",
-                           endpoint_args={})
+        return render_template('timeline.html', tweets=tweets, max_id=max_id,
+                               since_id=since_id, endpoint="show_index",
+                               endpoint_args={})
 
 
 @app.route('/~mentions')
 def show_mentions():
-    token = get_twitter_token()
-    if not token:
+    if not get_twitter_token():
         return render_template('prompt.html')
 
     if 'max_id' in request.args:
@@ -66,30 +82,27 @@ def show_mentions():
     else:
         resp = twitter.get('statuses/mentions_timeline.json')
 
-    if resp.status == 401:
-        session.pop('twitter_token')
-        flash('Unauthorized account access.')
-        return redirect(url_for('show_index'))
+    if request.is_xhr:
+        if resp.status == 401:
+            return jsonify(success=False, data='Unauthorized account access.')
 
-    since_id = max_id = None
-    if resp.status == 200:
-        tweets = resp.data
+        since_id, max_id, tweets = timeline_pagination(resp)
 
-        for tweet in tweets:
-            if since_id is None or since_id < tweet['id']:
-                since_id = tweet['id']
-            if max_id is None or max_id > tweet['id']:
-                max_id = tweet['id']
-        max_id -= 1
+        return jsonify(success=True, data=
+                       render_template('_timeline.html',
+                       tweets=tweets, max_id=max_id, since_id=since_id,
+                       endpoint='show_mentions', endpoint_args={}))
     else:
-        tweets = []
+        if resp.status == 401:
+            session.pop('twitter_token')
+            flash('Unauthorized account access.')
+            return redirect(url_for('show_index'))
 
-        flash('Unable to load tweets from Twitter. Maybe out of '
-              'API calls or Twitter is overloaded.')
+        since_id, max_id, tweets = timeline_pagination(resp)
 
-    return render_template('timeline.html', tweets=tweets, max_id=max_id,
-                           since_id=since_id, endpoint="show_mentions",
-                           endpoint_args={})
+        return render_template('timeline.html', tweets=tweets, max_id=max_id,
+                               since_id=since_id, endpoint="show_mentions",
+                               endpoint_args={})
 
 
 @app.route('/~messages')
@@ -130,21 +143,7 @@ def show_user(name):
         flash('Unauthorized account access.')
         return redirect(url_for('show_index'))
 
-    since_id = max_id = None
-    if resp.status == 200:
-        tweets = resp.data
-
-        for tweet in tweets:
-            if since_id is None or since_id < tweet['id']:
-                since_id = tweet['id']
-            if max_id is None or max_id > tweet['id']:
-                max_id = tweet['id']
-        max_id -= 1
-    else:
-        tweets = []
-
-        flash('Unable to load tweets from Twitter. Maybe out of '
-              'API calls or Twitter is overloaded.')
+    since_id, max_id, tweets = timeline_pagination(resp)
 
     return render_template('timeline.html', tweets=tweets, max_id=max_id,
                            since_id=since_id, endpoint="show_user",

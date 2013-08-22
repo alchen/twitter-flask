@@ -1,0 +1,12 @@
+{% import "_show_tweet.html" as show_tweet %}
+	<section class="rule">
+		Older tweets
+	</section>
+  	{%- for tweet in tweets -%}
+    	{{ show_tweet.helper(tweet) }}
+    {%- endfor -%}
+  	<section id="more">
+    	<a href="{{ url_for(endpoint, max_id=max_id, **endpoint_args) }}" id="more-link">Older tweets</a>
+    	<input type="hidden" value="{{ max_id }}" name="max_id" />
+    	<input type="hidden" value="{{ since_id }}" name="since_id" />
+    </section>

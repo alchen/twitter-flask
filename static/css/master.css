@@ -3,6 +3,12 @@
 	display: block;
 }
 
+.rule {
+	padding: .5rem 1rem;
+	border-bottom: 1px solid #eee;
+	line-height: 1rem;
+}
+
 .tweet {
 	border-bottom: 1px solid #ddd;
 	clear: both;
@@ -106,9 +112,9 @@ nav ul li a {
 #more {
 	margin: .5rem;
 	padding: .5rem;
-	background: #ccc;
+	background: #6aa;
 }
 
 #more a {
-	color: #000;
+	color: #fff;
 }
