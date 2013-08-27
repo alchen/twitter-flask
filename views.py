@@ -1,8 +1,10 @@
 import os
 import re
+import requests
+from BeautifulSoup import BeautifulSoup
 from twitter import app, twitter
 from flask import render_template, session, redirect, flash, url_for, request
-from flask import send_from_directory, jsonify
+from flask import send_from_directory, jsonify, abort
 
 
 @app.route('/favicon.ico')
@@ -62,7 +64,7 @@ def show_index():
         if resp.status == 401:
             session.pop('twitter_token')
             flash('Unauthorized account access.')
-            return redirect(url_for('show_index'))
+            return render_template('prompt.html')
 
         since_id, max_id, tweets = timeline_pagination(resp)
 
@@ -74,7 +76,7 @@ def show_index():
 @app.route('/~mentions')
 def show_mentions():
     if not get_twitter_token():
-        return render_template('prompt.html')
+        return redirect(url_for('show_index'))
 
     if 'max_id' in request.args:
         resp = twitter.get('statuses/mentions_timeline.json',
@@ -109,7 +111,7 @@ def show_mentions():
 def show_messages():
     token = get_twitter_token()
     if not token:
-        return render_template('prompt.html')
+        return redirect(url_for('show_index'))
 
     resp = twitter.get('direct_messages.json')
     if resp.status == 401:
@@ -131,7 +133,7 @@ def show_messages():
 @app.route('/<name>')
 def show_user(name):
     if not get_twitter_token():
-        return render_template('prompt.html')
+        return redirect(url_for('show_index'))
 
     if 'max_id' in request.args:
         resp = twitter.get('statuses/user_timeline.json',
@@ -351,14 +353,46 @@ def quote(id):
     return render_template('quote.html', id=id, tweet=tweet)
 
 
+def login_jail(login_page):
+    soup = BeautifulSoup(login_page)
+    form = soup.find('form', attrs={'id': 'oauth_form'})
+    if form is not None:
+        form['action'] = url_for('oauth_authorize')
+    return str(soup)
+
+
 @app.route('/login')
 def login():
-    return twitter.authorize(
-        callback=url_for(
-            'oauth_authorized',
-            next=request.args.get('next') or request.referrer or None
+    if app.config['PROXY'] is True:
+        redirect = twitter.authorize(
+            callback=url_for(
+                'oauth_authorized',
+                next=request.args.get('next') or request.referrer or None
+            )
         )
-    )
+        resp = requests.get(redirect.location)
+        if resp.status_code == 200:
+            return login_jail(resp.text)
+        else:
+            flash('Failed to retrieve OAuth authorization page.')
+            return redirect(url_for('show_index'))
+    else:
+        return twitter.authorize(
+            callback=url_for(
+                'oauth_authorized',
+                next=request.args.get('next') or request.referrer or None
+            )
+        )
+
+
+@app.route('/oauth/authorize', methods=['post'])
+def oauth_authorize():
+    if app.config['PROXY'] is True:
+        payload = request.form.to_dict()
+        resp = requests.post(twitter.authorize_url, params=payload)
+        return login_jail(resp.text)
+    else:
+        abort(404)
 
 
 @app.route('/logout')

@@ -1,3 +1,4 @@
+BeautifulSoup==3.2.1
 Flask==0.10.1
 Flask-Login==0.2.6
 Flask-OAuth==0.12
@@ -10,4 +11,5 @@ httplib2==0.8
 itsdangerous==0.23
 oauth2==1.5.211
 pytz==2013b
+requests==1.2.3
 wsgiref==0.1.2
