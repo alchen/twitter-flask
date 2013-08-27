@@ -1,6 +1,10 @@
 {%- macro helper(tweet) %}
 			<div class="tweet {% if is_mention(session['twitter_user'], tweet) %}mention{% endif %}">
-				<div class="icon"><a href="{{ url_for('show_user', name=tweet.user.screen_name) }}"><img src="{{ tweet.user.profile_image_url }}" /></a></div>
+				<div class="icon">
+					<a href="{{ url_for('show_user', name=tweet.user.screen_name) }}">
+						<img src="{{ tweet.user.profile_image_url }}" onerror="this.onerror=null;this.src='';" />
+					</a>
+				</div>
 				<div class="meta">
 					<span class="name">{{ tweet.user.name }}</span>
 					<span class="screen_name">&nbsp;@{{ tweet.user.screen_name }}</span>
