@@ -5,11 +5,13 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="shortcut icon" href="/favicon.png" type="image/x-icon"/>
-	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/normalize.css')}}"/>
-	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/master.css')}}"/>
-	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='font/iconic_stroke.css')}}"/>
-	<script type="text/javascript" src="http://code.jquery.com/jquery.min.js">
-	</script>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/normalize.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/master.css') }}" />
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="{{ url_for('static', filename='js/master.js') }}"></script>
+	<!--[if lt IE 9]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
 	<style>body{background-color: #3ac;font-family:'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;font-size: 1.6rem;line-height: 2.5rem;text-align:justify;color: #fff;}a{color:#fff;}#prompt{width: 32rem;height: 14rem;position: absolute;top: 50%;left:50%;margin-left:-16rem;margin-top:-7rem;}#title-text{font-size:2rem;font-weight: bold;background-color:#3e7ab5;color:#fff;padding: 0.25rem 0.5rem;border: 2px solid #fff;}#social{color:#333;background-color: #fff;padding: 0.125rem 0.375rem;}#login-link{background-color: #333;color: #fff;text-decoration: none;padding: 0.5rem;border: 2px solid #fff;}.grey{color:#333;}@media only screen and (max-width: 656px){html{font-size: 14px;}body{text-align: left;}#prompt{width: auto;height: auto;position: static;margin: 0;padding: 2rem 1.5rem;}}
 	</style>
 </head>
