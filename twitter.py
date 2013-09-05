@@ -3,15 +3,11 @@ import re
 import email.utils
 import pytz
 from flask import Flask
-from flask.ext.login import LoginManager
 from flask.ext.oauth import OAuth
 
 app = Flask(__name__)
 
 app.config.from_pyfile('config.py')
-
-login_manager = LoginManager()
-login_manager.setup_app(app)
 
 oauth = OAuth()
 twitter = oauth.remote_app(
