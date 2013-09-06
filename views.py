@@ -156,8 +156,7 @@ def show_user(name):
                        endpoint='show_user', endpoint_args={'name': name}))
     else:
         if resp.status == 401:
-            session.pop('twitter_token')
-            flash('Unauthorized account access.')
+            flash('Unauthorized account access, or blocked account.')
             return redirect(url_for('show_index'))
 
         since_id, max_id, tweets = timeline_pagination(resp)
