@@ -25,9 +25,9 @@ def timeline_pagination(resp):
         tweets = resp.data
 
         for tweet in tweets:
-            if since_id is None or since_id < tweet['id']:
+            if since_id is 0 or since_id < tweet['id']:
                 since_id = tweet['id']
-            if max_id is None or max_id > tweet['id']:
+            if max_id is 0 or max_id > tweet['id']:
                 max_id = tweet['id']
         max_id -= 1
     else:
