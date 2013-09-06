@@ -78,11 +78,18 @@ def pretty_date(time=False, now=None):
 
 
 def linkify(tweet):
+    text = tweet['text']
+    offset = 0
+    for url in tweet['entities']['urls']:
+        text = (text[:url['indices'][0]+offset]
+                + '<a href="' + url['expanded_url'] + '">'
+                + url['display_url'] + '</a>'
+                + text[url['indices'][1]+offset:])
+        offset += (15 + len(url['expanded_url']) + len(url['display_url'])
+                   - len(url['url']))
     name_replacement = re.compile(r'@(\w+)')
-    url_replacement = re.compile(r'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?]))')
-    tweet = name_replacement.sub('<a href="\g<1>">@\g<1></a>', tweet)
-    tweet = url_replacement.sub('<a href="\g<1>">\g<1></a>', tweet)
-    return tweet
+    text = name_replacement.sub('<a href="\g<1>">@\g<1></a>', text)
+    return text
 
 
 def is_mention(screen_name, tweet):

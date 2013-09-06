@@ -46,6 +46,11 @@
 	margin: .25rem;
 }
 
+.name a, .screen_name a {
+	text-decoration: none;
+	color: inherit;
+}
+
 .tweet, nav {
 	font-size: .75rem;
 }

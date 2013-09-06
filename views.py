@@ -20,7 +20,7 @@ def favicon_png():
 
 
 def timeline_pagination(resp):
-    since_id = max_id = None
+    since_id = max_id = 0
     if resp.status == 200:
         tweets = resp.data
 
@@ -38,6 +38,7 @@ def timeline_pagination(resp):
             flash(error['message'])
 
     return (since_id, max_id, tweets)
+
 
 @app.route('/')
 def show_index():

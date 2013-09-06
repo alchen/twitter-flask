@@ -6,8 +6,9 @@
 					</a>
 				</div>
 				<div class="meta">
-					<span class="name">{{ tweet.user.name }}</span>
-					<span class="screen_name">&nbsp;@{{ tweet.user.screen_name }}</span>
+					<span class="name"><a href="{{ url_for('show_user', name=tweet.user.screen_name) }}">{{ tweet.user.name }}</a>
+					</span>
+					<span class="screen_name">&nbsp;<a href="{{ url_for('show_user', name=tweet.user.screen_name) }}">@{{ tweet.user.screen_name }}</a></span>
 					<span class="timestamp">&nbsp;-&nbsp;
 						{%- if tweet.in_reply_to_status_id -%}
 							<a href="{{ url_for('thread', id=tweet.id) }}">{{ tweet.created_at | pretty_date }}</a>
@@ -33,6 +34,6 @@
 						{%- endif -%}
 					</span>
 				</div>
-				<div class="text">{{ tweet.text | linkify | safe }}</div>
+				<div class="text">{{ tweet | linkify | safe }}</div>
 			</div>
 {%- endmacro -%}
