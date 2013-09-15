@@ -78,9 +78,16 @@ def pretty_date(time=False, now=None):
 
 
 def linkify(tweet):
-    text = tweet['text']
+    if 'text' in tweet:
+        text = tweet['text']
+        urls = tweet['entities']['urls']
+    elif 'description' in tweet:
+        text = tweet['description']
+        urls = tweet['entities']['description']['urls']
+    else:
+        return ''
     offset = 0
-    for url in tweet['entities']['urls']:
+    for url in urls:
         text = (text[:url['indices'][0]+offset]
                 + '<a href="' + url['expanded_url'] + '">'
                 + url['display_url'] + '</a>'

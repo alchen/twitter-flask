@@ -160,10 +160,16 @@ def show_user(name):
             return redirect(url_for('show_index'))
 
         since_id, max_id, tweets = timeline_pagination(resp)
+        if len(tweets) > 0:
+            profile = tweets[0]['user']
+        else:
+            resp = twitter.get('users/show.json',
+                               data={'screen_name': name})
+            profile = resp.data
 
-        return render_template('timeline.html', tweets=tweets, max_id=max_id,
+        return render_template('profile.html', tweets=tweets, max_id=max_id,
                                since_id=since_id, endpoint="show_user",
-                               endpoint_args={'name': name})
+                               endpoint_args={'name': name}, profile=profile)
 
 
 @app.route('/+update', methods=['GET', 'POST'])

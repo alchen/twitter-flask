@@ -33,7 +33,7 @@
 	height: 3rem;
 }
 
-.text {
+.tweet .text {
 	margin: .25rem .25rem .25rem 4rem;
 	white-space: pre-wrap;
 }
@@ -53,6 +53,19 @@
 
 .tweet, nav {
 	font-size: .75rem;
+}
+
+.profile {
+	margin: .25rem;
+}
+
+.profile .text {
+	margin: .25rem;
+}
+
+.profile_details {
+	padding: 0;
+	margin: 0;
 }
 
 .name, #title {
