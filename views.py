@@ -160,13 +160,9 @@ def show_user(name):
             return redirect(url_for('show_index'))
 
         since_id, max_id, tweets = timeline_pagination(resp)
-        if len(tweets) > 0:
-            profile = tweets[0]['user']
-        else:
-            resp = twitter.get('users/show.json',
-                               data={'screen_name': name})
-            profile = resp.data
 
+        resp = twitter.get('users/show.json', data={'screen_name': name})
+        profile = resp.data
         return render_template('profile.html', tweets=tweets, max_id=max_id,
                                since_id=since_id, endpoint="show_user",
                                endpoint_args={'name': name}, profile=profile)
@@ -279,6 +275,78 @@ def unfavorite(id):
             flash(error['message'])
     else:
         flash('Successfully unfavorited.')
+
+    return redirect(request.referrer or url_for('show_index'))
+
+
+@app.route('/+follow/<int:id>')
+def follow(id):
+    resp = twitter.post('friendships/create.json', data={'user_id': id})
+
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
+
+    if resp.status != 200:
+        for error in resp.data['errors']:
+            flash(error['message'])
+    else:
+        flash('Successfully followed.')
+
+    return redirect(request.referrer or url_for('show_index'))
+
+
+@app.route('/-follow/<int:id>')
+def unfollow(id):
+    resp = twitter.post('friendships/destroy.json', data={'user_id': id})
+
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
+
+    if resp.status != 200:
+        for error in resp.data['errors']:
+            flash(error['message'])
+    else:
+        flash('Successfully unfollowed.')
+
+    return redirect(request.referrer or url_for('show_index'))
+
+
+@app.route('/+block/<int:id>')
+def block(id):
+    resp = twitter.post('blocks/create.json', data={'user_id': id})
+
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
+
+    if resp.status != 200:
+        for error in resp.data['errors']:
+            flash(error['message'])
+    else:
+        flash('Successfully blocked.')
+
+    return redirect(request.referrer or url_for('show_index'))
+
+
+@app.route('/-block/<int:id>')
+def unblock(id):
+    resp = twitter.post('blocks/destroy.json', data={'user_id': id})
+
+    if resp.status == 401:
+        session.pop('twitter_token')
+        flash('Unauthorized account access.')
+        return redirect(url_for('show_index'))
+
+    if resp.status != 200:
+        for error in resp.data['errors']:
+            flash(error['message'])
+    else:
+        flash('Successfully unblocked.')
 
     return redirect(request.referrer or url_for('show_index'))
 

@@ -3,10 +3,26 @@
   <section id="timeline">
   {{ update.helper(tweet) }}
   <div class="profile">
-    <div class="meta"><span class="name">{{ profile.name }}</span> <span class="screen_name">@{{ profile.screen_name }}</span></div>
+    <div class="meta">
+      <span class="name">{{ profile.name }}</span> <span class="screen_name">@{{ profile.screen_name }}</span>
+      <br />
+      <span class="actions">
+        {%- if profile.following -%}
+          <a href="{{ url_for('unfollow', id=profile.id) }}">Unfollow</a>
+        {%- else -%}
+          <a href="{{ url_for('follow', id=profile.id) }}">Follow</a>
+        {%- endif -%}&nbsp;-&nbsp; 
+          <a href="{{ url_for('block', id=profile.id) }}">Block</a>&nbsp;-&nbsp; 
+          <a href="{{ url_for('unblock', id=profile.id) }}">Unblock</a>
+      </span>
+    </div>
     <div class="text">
-      <ul class="profile_details">
+      <ul class="profile-details">
         <li>Bio: {{ profile | linkify | safe }}</li>
+        <li><span class="detail-title">Location:</span> {{ profile.location }}</li>
+        <li><span class="detail-title">Follower:</span> {{ profile.followers_count }}, <span class="detail-title">Following:</span> {{ profile.friends_count }}, <span class="detail-title">Tweets:</span> {{ profile.statuses_count }}</li>
+        <li><span class="detail-title">Following:</span> {{ profile.following }}, <span class="detail-title">Protected:</span> {{ profile.protected }}</li>
+        <li></li>
       </ul>
     </div>
   </div>

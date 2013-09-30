@@ -56,16 +56,24 @@
 }
 
 .profile {
-	margin: .25rem;
+	margin: .5rem .5rem 0 .5rem;
+	padding: .5rem;
+	background: #efefef;
+	font-size: .75rem;
 }
 
 .profile .text {
 	margin: .25rem;
 }
 
-.profile_details {
+.profile-details {
 	padding: 0;
 	margin: 0;
+	list-style: none;
+}
+
+.detail-title {
+	font-weight: bold;
 }
 
 .name, #title {
