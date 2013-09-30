@@ -9,6 +9,8 @@
       <span class="actions">
         {%- if profile.following -%}
           <a href="{{ url_for('unfollow', id=profile.id) }}">Unfollow</a>
+        {%- elif profile.protected and profile.follow_request_sent -%}
+          <a href="#">Follow request sent</a>
         {%- else -%}
           <a href="{{ url_for('follow', id=profile.id) }}">Follow</a>
         {%- endif -%}&nbsp;-&nbsp; 

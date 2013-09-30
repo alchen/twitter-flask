@@ -34,8 +34,9 @@ def timeline_pagination(resp):
         tweets = []
 
         flash('Unable to load tweets from Twitter.')
-        for error in resp.data['errors']:
-            flash(error['message'])
+        if 'errors' in resp.data:
+            for error in resp.data['errors']:
+                flash(error['message'])
 
     return (since_id, max_id, tweets)
 
@@ -136,6 +137,14 @@ def show_user(name):
     if not get_twitter_token():
         return redirect(url_for('show_index'))
 
+    resp = twitter.get('users/show.json', data={'screen_name': name})
+
+    if resp.status == 401:
+        flash('Unauthorized account access, or blocked account.')
+        return redirect(url_for('show_index'))
+
+    profile = resp.data
+
     if 'max_id' in request.args:
         resp = twitter.get('statuses/user_timeline.json',
                            data={'max_id': request.args['max_id'],
@@ -156,13 +165,10 @@ def show_user(name):
                        endpoint='show_user', endpoint_args={'name': name}))
     else:
         if resp.status == 401:
-            flash('Unauthorized account access, or blocked account.')
-            return redirect(url_for('show_index'))
+            flash('The user is protected, or you are blocked.')
 
         since_id, max_id, tweets = timeline_pagination(resp)
 
-        resp = twitter.get('users/show.json', data={'screen_name': name})
-        profile = resp.data
         return render_template('profile.html', tweets=tweets, max_id=max_id,
                                since_id=since_id, endpoint="show_user",
                                endpoint_args={'name': name}, profile=profile)
@@ -292,7 +298,7 @@ def follow(id):
         for error in resp.data['errors']:
             flash(error['message'])
     else:
-        flash('Successfully followed.')
+        flash('Successfully followed, or your request has been sent.')
 
     return redirect(request.referrer or url_for('show_index'))
 
