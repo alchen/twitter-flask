@@ -1,12 +1,20 @@
-#twitter client
+# Twitter Client
 
-**This use of virtualenv is always recommended.**
+This is a web client designed to proxy requests to Twitter from where direct access is not available.
 
-Install dependencies via `pip`:
+## Usage
+
+1. Create and fill in the `config.py` file.
+2. Install dependencies via `pip` and run:
 
 ```
 pip install -r requirements.txt
+python twitter.py
 ```
+
+Or, upload this to your SAAS platform of choice.
+
+## Configuration
 
 Create a `config.py` file in the following format:
 
@@ -18,12 +26,4 @@ TWITTER_CONSUMER_KEY='Get this from twitter'
 TWITTER_CONSUMER_SECRET='see above'
 ```
 
-Note: when `PROXY` is set to true, the entire authorization process will be taken from Twitter to your local server, where the app is deployed.
-
-And, run:
-
-```
-python twitter.py
-```
-
-The twitter client should then be accessible at port 5000 from any browser, or alternatively you can choose to deploy on SaaS platforms, such as Heroku.
+When `PROXY` is set to true, the entire authorization process will be taken from Twitter to your local server, where the app is deployed. This is, of course, an added security risk, but convenient when Twitter cannot be directly accessed.

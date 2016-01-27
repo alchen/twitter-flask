@@ -3,7 +3,7 @@ import re
 import email.utils
 import pytz
 from flask import Flask
-from flask.ext.oauth import OAuth
+from flask_oauthlib.client import OAuth
 
 app = Flask(__name__)
 
@@ -88,10 +88,10 @@ def linkify(tweet):
         return ''
     offset = 0
     for url in urls:
-        text = (text[:url['indices'][0]+offset]
+        text = (text[:url['indices'][0] + offset]
                 + '<a href="' + url['expanded_url'] + '">'
                 + url['display_url'] + '</a>'
-                + text[url['indices'][1]+offset:])
+                + text[url['indices'][1] + offset:])
         offset += (15 + len(url['expanded_url']) + len(url['display_url'])
                    - len(url['url']))
     name_replacement = re.compile(r'@(\w+)')

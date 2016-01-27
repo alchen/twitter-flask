@@ -4,7 +4,7 @@ import requests
 from BeautifulSoup import BeautifulSoup
 from twitter import app, twitter
 from flask import render_template, session, redirect, flash, url_for, request
-from flask import send_from_directory, jsonify, abort
+from flask import send_from_directory, jsonify, abort, make_response
 
 
 @app.route('/favicon.ico')
@@ -58,8 +58,7 @@ def show_index():
 
         since_id, max_id, tweets = timeline_pagination(resp)
 
-        return jsonify(success=True, data=
-                       render_template('_timeline.html',
+        return jsonify(success=True, data=render_template('_timeline.html',
                        tweets=tweets, max_id=max_id, since_id=since_id,
                        endpoint='show_index', endpoint_args={}))
     else:
@@ -92,8 +91,7 @@ def show_mentions():
 
         since_id, max_id, tweets = timeline_pagination(resp)
 
-        return jsonify(success=True, data=
-                       render_template('_timeline.html',
+        return jsonify(success=True, data=render_template('_timeline.html',
                        tweets=tweets, max_id=max_id, since_id=since_id,
                        endpoint='show_mentions', endpoint_args={}))
     else:
@@ -159,8 +157,7 @@ def show_user(name):
 
         since_id, max_id, tweets = timeline_pagination(resp)
 
-        return jsonify(success=True, data=
-                       render_template('_timeline.html',
+        return jsonify(success=True, data=render_template('_timeline.html',
                        tweets=tweets, max_id=max_id, since_id=since_id,
                        endpoint='show_user', endpoint_args={'name': name}))
     else:
@@ -402,8 +399,8 @@ def reply(id):
               'API calls or Twitter is overloaded.')
 
     names = re.findall(r'(@\w+)', tweet['text'])
-    author = '@'+tweet['user']['screen_name']
-    user = '@'+session['twitter_user']
+    author = '@' + tweet['user']['screen_name']
+    user = '@' + session['twitter_user']
     if author in names:
         names.remove(author)
     if user in names:
@@ -452,7 +449,10 @@ def login():
         )
         resp = requests.get(redirect.location)
         if resp.status_code == 200:
-            return login_jail(resp.text)
+            r = make_response(login_jail(resp.text))
+            for n, v in resp.cookies.iteritems():
+                r.set_cookie(n, v)
+            return r
         else:
             flash('Failed to retrieve OAuth authorization page.')
             return redirect(url_for('show_index'))
@@ -469,7 +469,18 @@ def login():
 def oauth_authorize():
     if app.config['PROXY'] is True:
         payload = request.form.to_dict()
-        resp = requests.post(twitter.authorize_url, params=payload)
+        resp = requests.post(
+            twitter.authorize_url,
+            params=payload,
+            headers={
+                'origin': 'https://api.twitter.com',
+                'referer': payload['redirect_after_login']
+            },
+            cookies={
+                '_twitter_sess': request.cookies.get('_twitter_sess'),
+                'guest_id': request.cookies.get('guest_id'),
+            }
+        )
         return login_jail(resp.text)
     else:
         abort(404)
